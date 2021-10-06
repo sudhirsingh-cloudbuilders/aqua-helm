@@ -3,9 +3,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-envoy
+  name: envoy
   labels:
-    app: {{ .Release.Name }}-envoy
+    app: envoy
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -13,7 +13,7 @@ spec:
   replicas: {{ .Values.envoy.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-envoy
+      app: envoy
   template:
     metadata:
       annotations:
@@ -21,8 +21,8 @@ spec:
         scheduler.alpha.kubernetes.io/tolerations: '{{ toJson .Values.envoy.tolerations }}'
       {{- end }}
       labels:
-        app: {{ .Release.Name }}-envoy
-      name: {{ .Release.Name }}-envoy
+        app: envoy
+      name: envoy
     spec:
       securityContext:
         {{ toYaml .Values.envoy.securityContext | nindent 8 }}

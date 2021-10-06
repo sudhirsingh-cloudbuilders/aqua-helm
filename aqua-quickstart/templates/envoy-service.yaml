@@ -8,7 +8,7 @@ metadata:
   - service.kubernetes.io/load-balancer-cleanup
   name: aqua-lb
   labels:
-    app: {{ .Release.Name }}-envoy
+    app: envoy
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -19,7 +19,7 @@ metadata:
 spec:
   type: {{ .Values.envoy.service.type }}
   selector:
-    app: {{ .Release.Name }}-envoy
+    app: envoy
   ports:
   {{- range $port := .Values.envoy.service.ports }}
     - name: {{ $port.name }}

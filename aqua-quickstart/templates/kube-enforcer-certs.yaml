@@ -4,5 +4,5 @@ metadata:
   name: {{ .Values.ke.certsSecret.name }}
   namespace: {{ .Values.ke.namespace }}
 data:
-  server.crt: {{ template "serverCertificate" . }}  # place server cert
-  server.key: {{ template "serverKey" . }}  # place server key
+  aqua_ke.crt: {{ template "serverCertificate" . }}  # place server cert
+  aqua_ke.key: {{ template "serverKey" . }}  # place server key

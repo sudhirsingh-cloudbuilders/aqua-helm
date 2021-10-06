@@ -3,32 +3,32 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-database-svc
+  name: {{ .Release.Namespace }}-db
   labels:
-    app: {{ .Release.Name }}-database
+    app: {{ .Release.Namespace }}-db
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
   type: {{ .Values.db.service.type }}
   selector:
-    app: {{ .Release.Name }}-database
+    app: {{ .Release.Namespace }}-db
   ports:
     - port: 5432
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-audit-database-svc
+  name: {{ .Release.Namespace }}-audit-db
   labels:
-    app: {{ .Release.Name }}-audit-database
+    app: {{ .Release.Namespace }}-audit-db
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
   type: {{ .Values.db.service.type }}
   selector:
-    app: {{ .Release.Name }}-audit-database
+    app: {{ .Release.Namespace }}-audit-db
   ports:
     - port: 5432
 {{- end }}

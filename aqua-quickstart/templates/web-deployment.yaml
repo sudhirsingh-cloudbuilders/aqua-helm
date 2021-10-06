@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-console
+  name: {{ .Release.Namespace }}-web
   labels:
-    app: {{ .Release.Name }}-console
+    app: {{ .Release.Namespace }}-web
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -12,7 +12,7 @@ spec:
   replicas: {{ .Values.web.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-console
+      app: {{ .Release.Namespace }}-web
   template:
     metadata:
       annotations:
@@ -20,12 +20,12 @@ spec:
         scheduler.alpha.kubernetes.io/tolerations: '{{ toJson .Values.web.tolerations }}'
       {{- end }}
       labels:
-        app: {{ .Release.Name }}-console
-      name: {{ .Release.Name }}-console
+        app: {{ .Release.Namespace }}-web
+      name: {{ .Release.Namespace }}-web
     spec:
       serviceAccount: {{ .Release.Namespace }}-sa
       containers:
-      - name: web
+      - name: {{ .Release.Namespace }}-web
         securityContext:
           {{- toYaml .Values.web.securityContext | nindent 12 }}
         image: "{{ .Values.imageCredentials.repositoryUriPrefix }}/{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
@@ -45,8 +45,8 @@ spec:
         - name: SCALOCK_DBPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-database-password
-              key: db-password
+              name: {{ .Release.Namespace }}-db
+              key: password
         {{- end }}
         - name: SCALOCK_DBNAME
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.name "scalock" }}
@@ -55,7 +55,7 @@ spec:
           value: {{ .Values.db.external.host }}
         {{- else }}
         - name: SCALOCK_DBHOST
-          value: {{ .Release.Name }}-database-svc
+          value: {{ .Release.Namespace }}-database-svc
         {{- end }}
         - name: SCALOCK_DBPORT
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.port "5432" | quote }}
@@ -71,11 +71,11 @@ spec:
         - name: SCALOCK_AUDIT_DBPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-database-password
+              name: {{ .Release.Namespace }}-audit-db
               {{- if .Values.db.external.auditPassword }}
-              key: audit-password
+              key: password
               {{- else }}
-              key: db-password
+              key: password
               {{- end }}
           {{- end }}
         - name: SCALOCK_AUDIT_DBNAME
@@ -84,7 +84,7 @@ spec:
           {{- if .Values.db.external.enabled }}
           value: {{ .Values.db.external.auditHost }}
           {{- else }}
-          value: {{ .Release.Name }}-audit-database-svc
+          value: {{ .Release.Namespace }}-audit-db
           {{- end }}
         - name: SCALOCK_AUDIT_DBPORT
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.auditPort "5432" | quote }}
@@ -101,11 +101,11 @@ spec:
         - name: AQUA_PUBSUB_DBPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-database-password
+              name: {{ .Release.Namespace }}-db
               {{- if .Values.db.external.pubsubPassword }}
-              key: pubsub-password
+              key: password
               {{- else }}
-              key: db-password
+              key: password
               {{- end }}
           {{- end }}
         - name: AQUA_PUBSUB_DBNAME
@@ -114,7 +114,7 @@ spec:
           {{- if .Values.db.external.enabled }}
           value: {{ .Values.db.external.pubsubHost }}
           {{- else }}
-          value: {{ .Release.Name }}-database-svc
+          value: {{ .Release.Namespace }}-db
           {{- end }}
         - name: AQUA_PUBSUB_DBPORT
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.pubsubPort "5432" | quote }}
@@ -139,14 +139,14 @@ spec:
         - name: LICENSE_TOKEN
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-console-secrets
+              name: {{ .Release.Namespace }}-console-secrets
               key: license-token
         {{- end }}
         {{- if .Values.admin.password }}
         - name: ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-console-secrets
+              name: {{ .Release.Namespace }}-console-secrets
               key: admin-password
         {{- end }}
         {{- include "server.extraEnvironmentVars" .Values.web | nindent 8 }}

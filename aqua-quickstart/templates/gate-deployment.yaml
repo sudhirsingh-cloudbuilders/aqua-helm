@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-gateway
+  name: {{ .Release.Namespace }}-gateway
   labels:
     app: {{ .Release.Name }}-gateway
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -11,7 +11,7 @@ spec:
   replicas: {{ .Values.gate.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-gateway
+      app: {{ .Release.Namespace }}-gateway
   template:
     metadata:
       annotations:
@@ -19,8 +19,8 @@ spec:
         scheduler.alpha.kubernetes.io/tolerations: '{{ toJson .Values.gate.tolerations }}'
       {{- end }}
       labels:
-        app: {{ .Release.Name }}-gateway
-      name: {{ .Release.Name }}-gateway
+        app: {{ .Release.Namespace }}-gateway
+      name: {{ .Release.Namespace }}-gateway
     spec:
       serviceAccount: {{ .Release.Namespace }}-sa
       containers:
@@ -33,7 +33,7 @@ spec:
         - name: SCALOCK_LOG_LEVEL
           value: {{ .Values.gate.logLevel | default "INFO" }}
         - name: AQUA_CONSOLE_SECURE_ADDRESS
-          value: "{{ .Release.Name }}-console-svc:443"
+          value: "{{ .Release.Namespace }}-web:443"
         - name: SCALOCK_GATEWAY_PUBLIC_IP
           value: {{ .Values.gate.publicIP | default "aqua-gateway-svc" }}
         - name: HEALTH_MONITOR
@@ -50,8 +50,8 @@ spec:
         - name: SCALOCK_DBPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-database-password
-              key: db-password
+              name: {{ .Release.Namespace }}-db
+              key: password
           {{- end }}
         - name: SCALOCK_DBNAME
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.name "scalock" }}
@@ -59,7 +59,7 @@ spec:
           {{- if .Values.db.external.enabled }}
           value: {{ .Values.db.external.host }}
           {{- else }}
-          value: {{ .Release.Name }}-database-svc
+          value: {{ .Release.Namespace }}-database-svc
           {{- end }}
         - name: SCALOCK_DBPORT
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.port "5432" | quote }}
@@ -75,11 +75,11 @@ spec:
         - name: SCALOCK_AUDIT_DBPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-database-password
+              name: {{ .Release.Namespace }}-audit-db
               {{- if .Values.db.external.auditPassword }}
-              key: audit-password
+              key: password
               {{- else }}
-              key: db-password
+              key: password
               {{- end }}
           {{- end }}
         - name: SCALOCK_AUDIT_DBNAME
@@ -88,7 +88,7 @@ spec:
           {{- if .Values.db.external.enabled }}
           value: {{ .Values.db.external.auditHost }}
           {{- else }}
-          value: {{ .Release.Name }}-audit-database-svc
+          value: {{ .Release.Namespace }}-audit-db
           {{- end }}
         - name: SCALOCK_AUDIT_DBPORT
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.auditPort "5432" | quote }}
@@ -105,11 +105,11 @@ spec:
         - name: AQUA_PUBSUB_DBPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-database-password
+              name: {{ .Release.Namespace }}-db
               {{- if .Values.db.external.pubsubPassword }}
-              key: pubsub-password
+              key: password
               {{- else }}
-              key: db-password
+              key: password
               {{- end }}
           {{- end }}
         - name: AQUA_PUBSUB_DBNAME
@@ -118,7 +118,7 @@ spec:
           {{- if .Values.db.external.enabled }}
           value: {{ .Values.db.external.pubsubHost }}
           {{- else }}
-          value: {{ .Release.Name }}-database-svc
+          value: {{ .Release.Namespace }}-db
           {{- end }}
         - name: AQUA_PUBSUB_DBPORT
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.pubsubPort "5432" | quote }}

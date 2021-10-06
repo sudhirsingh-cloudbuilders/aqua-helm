@@ -31,18 +31,18 @@ spec:
             - name: AQUA_CACHE_EXPIRATION_PERIOD
               value: "{{ .Values.ke.aqua_cache_expiration_period }}"
             - name: TLS_SERVER_CERT_FILEPATH
-              value: /certs/server.crt
+              value: /certs/aqua_ke.crt
             - name: TLS_SERVER_KEY_FILEPATH
-              value: /certs/server.key
+              value: /certs/aqua_ke.key
             - name: AQUA_GATEWAY_SECURE_ADDRESS
               value: {{ .Values.ke.envs.gatewayAddress }}
             - name: AQUA_TLS_PORT
               value: "8443"
           volumeMounts:
-            - name: "certs"
+            - name: {{ .Values.ke.certsSecret.name }}
               mountPath: "/certs"
       volumes:
-        - name: "certs"
+        - name: {{ .Values.ke.certsSecret.name }}
           secret:
             secretName: {{ .Values.ke.certsSecret.name }}
       imagePullSecrets:
