@@ -4,9 +4,10 @@
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
-    name: {{ .Release.Name }}-psp
+    name: {{ .Release.Namespace }}-psp
+    namespace: {{ .Release.Namespace }}
     labels:
-      app: {{ .Release.Name }}
+      app: {{ .Release.Namespace }}
       chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
       release: "{{ .Release.Name }}"
       heritage: "{{ .Release.Service }}"
@@ -28,9 +29,10 @@ spec:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-cluster-role
+  name: {{ .Release.Namespace }}-discovery-cr
+  namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}
+    app: {{ .Release.Namespace }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -51,10 +53,10 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-role-binding
+  name: {{ .Release.Namespace }}-discovery-crb
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}
+    app: {{ .Release.Namespace }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -68,7 +70,7 @@ roleRef:
   {{- if .Values.rbac.roleRef }}
   name: {{ .Values.rbac.roleRef }}
   {{- else }}
-  name: {{ .Release.Name }}-cluster-role
+  name: {{ .Release.Namespace }}-discovery-cr
   {{- end }}
 
 {{- if not .Values.platform -}}

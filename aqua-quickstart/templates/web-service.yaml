@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-console-svc
+  name: {{ .Release.Namespace }}-web
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}-console
+    app: {{ .Release.Namespace }}-web
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -19,7 +19,7 @@ spec:
   loadBalancerIP: {{ .Values.web.service.loadbalancerIP }}
   {{- end }}
   selector:
-    app: {{ .Release.Name }}-console
+    app: {{ .Release.Namespace }}-web
   ports:
   {{- if eq .Values.platform "k3s"}}
   {{- range $port := .Values.web.service.k3sPorts }}

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    role: {{ .Release.Name }}
+    role: {{ .Values.ke.role.name }}
     app: {{ include "kube-enforcer.fullname" . }}
   name: {{ include "kube-enforcer.fullname" . }}
   namespace: {{ .Release.Namespace }}

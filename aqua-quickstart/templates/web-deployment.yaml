@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Namespace }}-web
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Release.Namespace }}-web
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -35,6 +36,7 @@ spec:
       serviceAccount: {{ .Release.Namespace }}-sa
       containers:
       - name: {{ .Release.Namespace }}-web
+        {{- with .Values.web.container_securityContext }}
         securityContext:
 {{ toYaml . | indent 10 }}
         {{- end }}
@@ -52,7 +54,7 @@ spec:
         - name: BATCH_INSTALL_ORCHESTRATOR
           value: "Kubernetes"
         - name: BATCH_INSTALL_GATEWAY
-          value: "aqua-gateway-svc"
+          value: "aqua-gateway"
         {{- if .Values.db.passwordFromSecret.enabled }}
         - name: SCALOCK_DBPASSWORD
           valueFrom:
@@ -97,8 +99,8 @@ spec:
           {{- else }}
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-database-password
-              key: audit-password
+              name: {{ .Release.Namespace }}-audit-db
+              key: password
           {{- end }}
         - name: SCALOCK_AUDIT_DBNAME
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.auditName "slk_audit" }}
@@ -214,7 +216,7 @@ spec:
         {{- end }}
         {{- if .Values.web.TLS.enabled }}
         volumeMounts:
-        - name: certs
+        - name: {{ .Release.Namespace }}-grpc-web
           mountPath: /opt/aquasec/ssl/
           readOnly: true
         {{- end }}
@@ -240,7 +242,7 @@ spec:
       {{- end }}
       {{- if .Values.web.TLS.enabled }}
       volumes:
-      - name: certs
+      - name: {{ .Release.Namespace }}-grpc-web
         secret:
           defaultMode: 420
           secretName: {{ .Values.web.TLS.secretName }}
