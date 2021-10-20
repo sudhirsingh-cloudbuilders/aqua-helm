@@ -75,7 +75,7 @@ spec:
           value: {{ .Values.db.external.host }}
         {{- else }}
         - name: SCALOCK_DBHOST
-          value: {{ .Release.Namespace }}-database-svc
+          value: {{ .Release.Namespace }}-db
         {{- end }}
         - name: SCALOCK_DBPORT
           value: {{ .Values.db.external.enabled | ternary .Values.db.external.port "5432" | quote }}

@@ -140,30 +140,30 @@ starboard:
 
 db:
   external:
-    enabled: true
-    name: ""
-    host: aqua-db
+    enabled: false
+    name: "scalock"
+    host: "aqua-db"
     port: ""
     user: ""
-    password: cGFzc3dvcmQK
+    password: "cGFzc3dvcmQK"
     auditName: ""
     auditHost: ""
     auditPort: ""
     auditUser: ""
-    auditPassword: cGFzc3dvcmQK
+    auditPassword: "cGFzc3dvcmQK"
     pubsubName: ""
     pubsubHost: ""
     pubsubPort: ""
     pubsubUser: ""
-    pubsubPassword: cGFzc3dvcmQK
+    pubsubPassword: "cGFzc3dvcmQK"
   passwordFromSecret:
-    enabled: true              #Enable if loading passwords for db and audit-db from secret
-    dbPasswordName: aqua-db           #Specify the Password Secret name used for db password
-    dbPasswordKey: password            #Specify the db password key name stored in the #dbPasswordName secret
-    dbAuditPasswordName: aqua-audit-db          #Specify the Password Secret name used for audit db password
-    dbAuditPasswordKey: password           #Specify the audit db password key name stored in the #dbAuditPasswordName secret
-    dbPubsubPasswordName: aqua-db            #Specify the Password Secret name used for pubsub db password
-    dbPubsubPasswordKey: password          #Specify the pubsub db password key name stored in the #PubsubPasswordName secret
+    enabled: false              #Enable if loading passwords for db and audit-db from secret
+    dbPasswordName: "aqua-db"           #Specify the Password Secret name used for db password
+    dbPasswordKey: "password"           #Specify the db password key name stored in the #dbPasswordName secret
+    dbAuditPasswordName: "aqua-audit-db"          #Specify the Password Secret name used for audit db password
+    dbAuditPasswordKey: "password"           #Specify the audit db password key name stored in the #dbAuditPasswordName secret
+    dbPubsubPasswordName: "aqua-db"            #Specify the Password Secret name used for pubsub db password
+    dbPubsubPasswordKey: "password"          #Specify the pubsub db password key name stored in the #PubsubPasswordName secret
   ssl: false
   auditssl: false
   pubsubssl: false
